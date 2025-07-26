@@ -11,9 +11,8 @@ import {
   Avatar,
   Button,
   IconButton,
-  Stack,
 } from "@mui/material"
-import { Search, FilterList, Person, KeyboardArrowDown, AccessTime, VideoCall } from "@mui/icons-material"
+import { Search, FilterList, Person, KeyboardArrowDown, AccessTime, Call, LocationOn } from "@mui/icons-material"
 import { useRouter } from "next/navigation"
 
 export default function Dashboard() {
@@ -212,7 +211,7 @@ export default function Dashboard() {
           }}
         >
           <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Box sx={{ mr: 2 }}>
                 <Typography
                   sx={{
@@ -234,86 +233,100 @@ export default function Dashboard() {
                   {upcomingSession.location}
                 </Typography>
               </Box>
-              <Box sx={{ ml: "auto", display: "flex", alignItems: "center" }}>
-                <Avatar sx={{ width: 32, height: 32, mr: 1, bgcolor: "#E5E7EB" }}>
-                  <Person sx={{ fontSize: "18px", color: "#666" }} />
-                </Avatar>
-                <Avatar sx={{ width: 32, height: 32, bgcolor: "#8B5CF6" }}>
-                  <Person sx={{ fontSize: "18px", color: "white" }} />
-                </Avatar>
+              {/* Vertical divider */}
+              <Box
+                sx={{
+                  width: "1px",
+                  height: "60px",
+                  bgcolor: "#E5E7EB",
+                  mx: 2,
+                }}
+              />
+              <Avatar
+                sx={{
+                  width: 48,
+                  height: 48,
+                  mr: 1.5,
+                  bgcolor: "#E5E7EB",
+                  // Placeholder image for the doctor
+                  backgroundImage: `url(/placeholder.jpg?height=48&width=48&query=male doctor portrait)`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+              <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <Typography
+                    sx={{
+                      fontSize: "16px",
+                      fontWeight: 600,
+                      color: "#000",
+                    }}
+                  >
+                    {upcomingSession.doctor}
+                  </Typography>
+                  <IconButton size="small" sx={{ color: "#666" }}>
+                    <KeyboardArrowDown sx={{ fontSize: "20px" }} />
+                  </IconButton>
+                </Box>
+                <IconButton
+                  sx={{
+                    bgcolor: "#8B5CF6",
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    mt: 0.5,
+                    "&:hover": { bgcolor: "#7C3AED" },
+                  }}
+                >
+                  <Call sx={{ fontSize: "16px", color: "white" }} />
+                </IconButton>
               </Box>
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Typography
-                sx={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#000",
-                  mr: 1,
-                }}
-              >
-                {upcomingSession.doctor}
-              </Typography>
-              <KeyboardArrowDown sx={{ color: "#666", fontSize: "20px" }} />
-            </Box>
-
-            <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  bgcolor: "#F3F4F6",
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: "8px",
-                }}
-              >
+            {/* Session Duration and Mode - now stacked and without background */}
+            <Box sx={{ mb: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
                 <AccessTime sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
                 <Typography sx={{ fontSize: "12px", color: "#666" }}>
                   Session Duration: {upcomingSession.duration}
                 </Typography>
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  bgcolor: "#F3F4F6",
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: "8px",
-                }}
-              >
-                <VideoCall sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <LocationOn sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
                 <Typography sx={{ fontSize: "12px", color: "#666" }}>Session Mode: {upcomingSession.mode}</Typography>
               </Box>
-            </Stack>
+            </Box>
 
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: "#8B5CF6",
-                borderRadius: "12px",
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: "14px",
-                py: 1.5,
-                px: 3,
-                mb: 2,
-                "&:hover": { bgcolor: "#7C3AED" },
-              }}
-            >
-              Mark as Completed
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Button
+                variant="contained"
+                sx={{
+                  bgcolor: "#E7A1A0", // Solid color as per new request
+                  borderRadius: "12px",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  py: 1.5,
+                  px: 3,
+                  "&:hover": {
+                    bgcolor: "#DB908F", // Slightly darker on hover
+                  },
+                }}
+              >
+                Mark as Completed
+              </Button>
 
-            <Typography
-              sx={{
-                fontSize: "12px",
-                color: "#666",
-              }}
-            >
-              Previous Session: {upcomingSession.previousDate}
-            </Typography>
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  color: "#666",
+                  textAlign: "right",
+                }}
+              >
+                Previous Session: {upcomingSession.previousDate}
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
 
@@ -399,16 +412,16 @@ export default function Dashboard() {
           variant="contained"
           onClick={() => router.push("/doctors")}
           sx={{
-            background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
+            bgcolor: "#E7A1A0", // Solid color as per new request
             borderRadius: "16px",
             py: 2,
             fontSize: "16px",
             fontWeight: 600,
             textTransform: "none",
-            boxShadow: "0 4px 20px rgba(139, 92, 246, 0.3)",
+            boxShadow: "0 4px 20px rgba(231, 161, 160, 0.3)", // Updated shadow color
             mb: 3,
             "&:hover": {
-              background: "linear-gradient(135deg, #7C3AED 0%, #DB2777 100%)",
+              bgcolor: "#DB908F", // Slightly darker on hover
             },
           }}
         >

@@ -616,16 +616,16 @@ export default function ScheduleSession() {
             onClick={() => router.back()}
             sx={{
               flex: 1,
-              borderColor: "#E5E7EB",
-              color: "#666",
+              borderColor: "#CC627B", // Border color
+              color: "#CC627B", // Text color
               borderRadius: "12px",
               py: 1.5,
               fontSize: "16px",
               fontWeight: 600,
               textTransform: "none",
               "&:hover": {
-                borderColor: "#D1D5DB",
-                bgcolor: "rgba(0,0,0,0.02)",
+                borderColor: "#CC627B", // Keep border color on hover
+                bgcolor: "rgba(204, 98, 123, 0.05)", // Subtle background on hover
               },
             }}
           >
@@ -645,16 +645,16 @@ export default function ScheduleSession() {
             }}
             sx={{
               flex: 1,
-              background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
+              bgcolor: "#F0C8C7", // Lighter version of #E7A1A0
               borderRadius: "12px",
               py: 1.5,
               fontSize: "16px",
               fontWeight: 600,
               textTransform: "none",
-              boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)",
+              boxShadow: "0 4px 12px rgba(240, 200, 199, 0.3)", // Updated shadow color
               "&:hover": {
-                background: "linear-gradient(135deg, #7C3AED 0%, #DB2777 100%)",
-                boxShadow: "0 6px 16px rgba(139, 92, 246, 0.4)",
+                bgcolor: "#E7A1A0", // Slightly darker on hover
+                boxShadow: "0 6px 16px rgba(240, 200, 199, 0.4)",
               },
             }}
           >

@@ -366,14 +366,14 @@ export default function Doctors() {
                     variant="contained"
                     onClick={() => router.push("/schedule")}
                     sx={{
-                      background: "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
+                      bgcolor: "#E7A1A0", // Solid color as per new request
                       borderRadius: "12px",
                       py: 1.5,
                       fontSize: "16px",
                       fontWeight: 600,
                       textTransform: "none",
                       "&:hover": {
-                        background: "linear-gradient(135deg, #7C3AED 0%, #DB2777 100%)",
+                        bgcolor: "#DB908F", // Slightly darker on hover
                       },
                     }}
                   >
