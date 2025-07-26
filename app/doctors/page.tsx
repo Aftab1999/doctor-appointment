@@ -15,6 +15,12 @@ import {
 } from "@mui/material"
 import { Search, ArrowBack, GridView, FilterList, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material"
 import { useRouter } from "next/navigation"
+import Image from "next/image";
+
+import Person2 from "../../assets/svg-2.svg";
+import Person3 from "../../assets/svg-3.svg";
+import Person4 from "../../assets/svg-4.svg";
+import Person5 from "../../assets/svg-5.svg";
 
 export default function Doctors() {
   const router = useRouter()
@@ -30,7 +36,7 @@ export default function Doctors() {
       gender: "Male",
       sessionMode: "In-Person & Online",
       fee: "₹1,500/-",
-      avatar: "T",
+      avatar: Person2,
     },
     {
       id: 1,
@@ -40,7 +46,7 @@ export default function Doctors() {
       gender: "Female",
       sessionMode: "Online",
       fee: "₹2,000/-",
-      avatar: "P",
+      avatar: Person3,
     },
     {
       id: 2,
@@ -50,7 +56,7 @@ export default function Doctors() {
       gender: "Male",
       sessionMode: "In-Person",
       fee: "₹1,800/-",
-      avatar: "P",
+      avatar: Person4,
     },
     {
       id: 3,
@@ -60,7 +66,7 @@ export default function Doctors() {
       gender: "Male",
       sessionMode: "Online",
       fee: "₹1,200/-",
-      avatar: "T",
+      avatar: Person5,
     },
   ]
 
@@ -232,18 +238,19 @@ export default function Doctors() {
                 }}
                 onClick={() => handleCardToggle(doctor.id)}
               >
-                <Avatar
+                <Box
                   sx={{
                     width: 48,
                     height: 48,
-                    mr: 2,
-                    bgcolor: "#8B5CF6",
+                    // mr: 1,
                     fontSize: "18px",
                     fontWeight: 600,
                   }}
                 >
-                  {doctor.avatar}
-                </Avatar>
+                  {/* Render the SVG icon as a React component */}
+                  <Image src={doctor.avatar} alt={doctor.name} width={40} height={40} />
+
+                </Box>
                 <Box sx={{ flex: 1 }}>
                   <Typography
                     sx={{
@@ -366,15 +373,17 @@ export default function Doctors() {
                     variant="contained"
                     onClick={() => router.push("/schedule")}
                     sx={{
-                      bgcolor: "#E7A1A0", // Solid color as per new request
+                      height: "43px",
+                      // bgcolor: "#E7A1A0",
+                       background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
                       borderRadius: "12px",
                       py: 1.5,
                       fontSize: "16px",
                       fontWeight: 600,
                       textTransform: "none",
                       "&:hover": {
-                        bgcolor: "#DB908F", // Slightly darker on hover
-                      },
+      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
+    },
                     }}
                   >
                     Book Now

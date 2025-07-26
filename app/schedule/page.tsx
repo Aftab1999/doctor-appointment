@@ -24,6 +24,13 @@ import { ArrowBack, CalendarToday, AccessTime, KeyboardArrowDown } from "@mui/ic
 import { useRouter } from "next/navigation"
 import TimeSelectionModal from "@/components/time-selection-modal"
 
+import Image from "next/image"
+
+import Person6 from "../../assets/svg-6.svg";
+import Person7 from "../../assets/svg-7.svg";
+
+
+
 export default function ScheduleSession() {
   const router = useRouter()
   const [sessionMode, setSessionMode] = useState("in-person")
@@ -38,13 +45,16 @@ export default function ScheduleSession() {
   const patient = {
     name: "Shubham Naik",
     phone: "+91 98765 43210",
-    avatar: "S",
+    // avatar: "S",
+    avatar: Person6,
+
   }
 
   const practitioner = {
     name: "Sana Dillon",
     phone: "+91 98765 43210",
-    avatar: "S",
+    // avatar: "S",
+    avatar: Person7,
   }
 
   const sessionTypes = [
@@ -74,7 +84,7 @@ export default function ScheduleSession() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #E8D5FF 0%, #F5E6FF 50%, #FFE4E6 100%)",
+        background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
         maxWidth: "400px",
         mx: "auto",
         position: "relative",
@@ -185,18 +195,22 @@ export default function ScheduleSession() {
         >
           <CardContent sx={{ p: 2.5 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Avatar
+              <Box
                 sx={{
-                  width: 40,
-                  height: 40,
-                  mr: 2,
-                  bgcolor: "#8B5CF6",
-                  fontSize: "16px",
+                  width: 48,
+                  height: 48,
+                  fontSize: "18px",
                   fontWeight: 600,
                 }}
               >
-                {patient.avatar}
-              </Avatar>
+                <img
+                  src={typeof patient.avatar === "string" ? patient.avatar : patient.avatar.src}
+                  alt={patient.name}
+                  width={40}
+                  height={40}
+                  style={{ objectFit: "contain", borderRadius: "50%" }}
+                />
+              </Box>
               <Box>
                 <Typography
                   sx={{
@@ -252,7 +266,13 @@ export default function ScheduleSession() {
                   fontWeight: 600,
                 }}
               >
-                {practitioner.avatar}
+                <img
+                  src={typeof practitioner.avatar === "string" ? practitioner.avatar : practitioner.avatar.src}
+                  alt={practitioner.name}
+                  width={32}
+                  height={32}
+                  style={{ objectFit: "contain", width: 32, height: 32 }}
+                />
               </Avatar>
               <Box>
                 <Typography
@@ -456,13 +476,13 @@ export default function ScheduleSession() {
                   },
                 },
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <CalendarToday sx={{ color: "#999", fontSize: "20px" }} />
-                  </InputAdornment>
-                ),
-              }}
+            // InputProps={{
+            //   endAdornment: (
+            //     <InputAdornment position="end">
+            //       <CalendarToday sx={{ color: "#999", fontSize: "20px" }} />
+            //     </InputAdornment>
+            //   ),
+            // }}
             />
           </Box>
           <Box sx={{ flex: 1 }}>
@@ -481,7 +501,7 @@ export default function ScheduleSession() {
               value={sessionTime || "HH : MM"} // Display placeholder if sessionTime is empty
               placeholder="HH : MM"
               onClick={() => setIsTimeModalOpen(true)}
-              readOnly
+              // readOnly
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "12px",
@@ -531,9 +551,9 @@ export default function ScheduleSession() {
             </Typography>
             <Box
               sx={{
-                bgcolor: "rgba(255, 240, 245, 0.8)", // Light pink background
+                bgcolor: "#FFF",
                 borderRadius: "12px",
-                p: 2.5,
+                // p: 2.5,
               }}
             >
               <TextField
@@ -645,17 +665,21 @@ export default function ScheduleSession() {
             }}
             sx={{
               flex: 1,
-              bgcolor: "#F0C8C7", // Lighter version of #E7A1A0
+              // bgcolor: "#F0C8C7",
+               background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
               borderRadius: "12px",
               py: 1.5,
               fontSize: "16px",
               fontWeight: 600,
               textTransform: "none",
               boxShadow: "0 4px 12px rgba(240, 200, 199, 0.3)", // Updated shadow color
-              "&:hover": {
-                bgcolor: "#E7A1A0", // Slightly darker on hover
-                boxShadow: "0 6px 16px rgba(240, 200, 199, 0.4)",
-              },
+              // "&:hover": {
+              //   bgcolor: "#E7A1A0", 
+              //   boxShadow: "0 6px 16px rgba(240, 200, 199, 0.4)",
+              // },
+               "&:hover": {
+      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
+    },
             }}
           >
             Confirm

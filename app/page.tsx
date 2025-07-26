@@ -15,6 +15,11 @@ import {
 import { Search, FilterList, Person, KeyboardArrowDown, AccessTime, Call, LocationOn } from "@mui/icons-material"
 import { useRouter } from "next/navigation"
 
+import doctorPortrait from "../assets/sgv-1.svg"
+import CallIcon from "../assets/caller.svg"
+import ProfileIcon from "../assets/profile.svg"
+import { profile } from "console"
+
 export default function Dashboard() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
@@ -53,8 +58,9 @@ export default function Dashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #E8D5FF 0%, #F5E6FF 50%, #FFE4E6 100%)",
-        maxWidth: "400px",
+        // background: "linear-gradient(180deg, #E8D5FF 0%, #F5E6FF 50%, #FFE4E6 100%)",
+         background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
+        maxWidth: "420px",
         mx: "auto",
         position: "relative",
       }}
@@ -120,8 +126,8 @@ export default function Dashboard() {
         <Typography
           sx={{
             fontSize: "14px",
-            color: "#666",
-            mb: 0.5,
+          color: "#FFF",
+            // mb: 0.5,
             fontWeight: 400,
           }}
         >
@@ -132,20 +138,37 @@ export default function Dashboard() {
             sx={{
               fontSize: "24px",
               fontWeight: 600,
-              color: "#000",
+              color: "#FFF",
             }}
           >
             Manjunath Naik
           </Typography>
-          <Avatar
+
+          {/* <Avatar
             sx={{
               width: 40,
               height: 40,
               bgcolor: "#8B5CF6",
             }}
           >
-            <Person sx={{ color: "white" }} />
-          </Avatar>
+          
+          </Avatar> */}
+
+          <Avatar
+                sx={{
+                  width: 48,
+                  height: 48,
+                  mr: 1.5,
+                  marginBottom: "10px",
+                  bgcolor: "#8B5CF6",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+                 alt="Doctor Portrait"
+                 src={ProfileIcon.src} 
+              />
+
+
         </Box>
 
         {/* Search Bar */}
@@ -215,10 +238,11 @@ export default function Dashboard() {
               <Box sx={{ mr: 2 }}>
                 <Typography
                   sx={{
-                    fontSize: "28px",
-                    fontWeight: 700,
+                    fontSize: "20px",
+                    fontWeight: 600,
                     color: "#000",
                     lineHeight: 1,
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {upcomingSession.time}
@@ -226,7 +250,7 @@ export default function Dashboard() {
                 <Typography
                   sx={{
                     fontSize: "14px",
-                    color: "#666",
+                    color: "#6D6A5D",
                     mt: 0.5,
                   }}
                 >
@@ -247,12 +271,13 @@ export default function Dashboard() {
                   width: 48,
                   height: 48,
                   mr: 1.5,
+                  marginBottom: "10px",
                   bgcolor: "#E5E7EB",
-                  // Placeholder image for the doctor
-                  backgroundImage: `url(/placeholder.jpg?height=48&width=48&query=male doctor portrait)`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
+                 alt="Doctor Portrait"
+                 src={doctorPortrait.src} 
               />
               <Box sx={{ flexGrow: 1 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -261,6 +286,7 @@ export default function Dashboard() {
                       fontSize: "16px",
                       fontWeight: 600,
                       color: "#000",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {upcomingSession.doctor}
@@ -269,18 +295,9 @@ export default function Dashboard() {
                     <KeyboardArrowDown sx={{ fontSize: "20px" }} />
                   </IconButton>
                 </Box>
-                <IconButton
-                  sx={{
-                    bgcolor: "#8B5CF6",
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    mt: 0.5,
-                    "&:hover": { bgcolor: "#7C3AED" },
-                  }}
-                >
-                  <Call sx={{ fontSize: "16px", color: "white" }} />
-                </IconButton>
+
+                <img src={CallIcon.src} alt="Call Icon" style={{ width: "25px", height: "25px" }} />
+
               </Box>
             </Box>
 
@@ -299,32 +316,46 @@ export default function Dashboard() {
             </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+         
+
               <Button
-                variant="contained"
-                sx={{
-                  bgcolor: "#E7A1A0", // Solid color as per new request
-                  borderRadius: "12px",
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  py: 1.5,
-                  px: 3,
-                  "&:hover": {
-                    bgcolor: "#DB908F", // Slightly darker on hover
-                  },
-                }}
-              >
-                Mark as Completed
-              </Button>
+  variant="contained"
+  sx={{
+    height: "43px",
+    width: "197px",
+    whiteSpace: "nowrap",
+    background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
+    borderRadius: "12px",
+    textTransform: "none",
+    fontWeight: 600,
+    fontSize: "14px",
+    py: 1.5,
+    px: 3,
+    color: "white", // Ensure text is readable
+    "&:hover": {
+      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
+    },
+    boxShadow: "none", // Remove default shadow if needed
+  }}
+>
+  Mark as Completed
+</Button>
 
               <Typography
                 sx={{
                   fontSize: "12px",
                   color: "#666",
-                  textAlign: "right",
+                  pl: 1,
+                  // textAlign: "right",
                 }}
               >
-                Previous Session: {upcomingSession.previousDate}
+                Previous Session: <br/>
+                
+                <span style={{ whiteSpace:"nowrap" }}>
+                 {upcomingSession.previousDate}
+                </span>
+                
               </Typography>
             </Box>
           </CardContent>
@@ -412,8 +443,9 @@ export default function Dashboard() {
           variant="contained"
           onClick={() => router.push("/doctors")}
           sx={{
-            bgcolor: "#E7A1A0", // Solid color as per new request
-            borderRadius: "16px",
+             height: "43px",
+              background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
+            borderRadius: "12px",
             py: 2,
             fontSize: "16px",
             fontWeight: 600,
@@ -421,8 +453,8 @@ export default function Dashboard() {
             boxShadow: "0 4px 20px rgba(231, 161, 160, 0.3)", // Updated shadow color
             mb: 3,
             "&:hover": {
-              bgcolor: "#DB908F", // Slightly darker on hover
-            },
+      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
+    },
           }}
         >
           Schedule Now

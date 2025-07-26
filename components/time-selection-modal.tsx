@@ -134,9 +134,10 @@ export default function TimeSelectionModal({ open, onClose, onConfirm, selectedT
                     fontSize: "14px",
                     fontWeight: 500,
                     textTransform: "none",
-                    borderColor: currentTime === time ? "#8B5CF6" : "#E5E7EB",
-                    color: currentTime === time ? "#8B5CF6" : "#666",
-                    bgcolor: currentTime === time ? "rgba(139, 92, 246, 0.1)" : "transparent",
+                    // borderColor: currentTime === time ? "#8B5CF6" : "#E5E7EB",
+                    borderColor: currentTime === time ? "#CC627B" : "#CC627B",
+                    color: currentTime === time ? "#8B5CF6" : "#8B5CF6",
+                    bgcolor: currentTime === time ? "#dac9f4ff" : "transparent",
                     "&:hover": {
                       borderColor: "#8B5CF6",
                       bgcolor: "rgba(139, 92, 246, 0.05)",
