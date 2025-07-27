@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Box,
   Typography,
@@ -12,47 +12,65 @@ import {
   Button,
   IconButton,
 } from "@mui/material"
-import { Search, FilterList, Person, KeyboardArrowDown, AccessTime, Call, LocationOn } from "@mui/icons-material"
+import { Search, FilterList, KeyboardArrowDown, AccessTime, LocationOn } from "@mui/icons-material"
 import { useRouter } from "next/navigation"
 
 import doctorPortrait from "../assets/sgv-1.svg"
 import CallIcon from "../assets/caller.svg"
 import ProfileIcon from "../assets/profile.svg"
-import { profile } from "console"
+
+interface Session {
+  sessionMode: string
+  sessionDate: string
+  sessionTime: string
+  sessionDetails?: string
+  onlineSessionLink?: string
+  sessionType: string
+  patient: {
+    name: string
+    phone: string
+    avatar: string
+  }
+  practitioner: {
+    name: string
+    phone: string
+    avatar: string
+  }
+  createdAt: string
+}
 
 export default function Dashboard() {
-  const router = useRouter()
+
+
+ const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
+  const [upcomingSession, setUpcomingSession] = useState<Session | null>(null)
+  const [pastSessions, setPastSessions] = useState<any[]>([]) // You can define proper type for past sessions
 
-  const upcomingSession = {
-    time: "11:00 AM",
-    location: "Bandra",
-    doctor: "Dr. Kiran Rathi",
-    duration: "01:00 HR",
-    mode: "Online",
-    previousDate: "Tuesday, March 5, 2023",
+  useEffect(() => {
+    // Load sessions from localStorage
+    const sessions = JSON.parse(localStorage.getItem("scheduledSessions") || "[]")
+    
+    if (sessions.length > 0) {
+      // Find the most recent upcoming session (simplified logic - you might want to filter by date)
+      const mostRecentSession = sessions[sessions.length - 1]
+      setUpcomingSession(mostRecentSession)
+
+      // For demo purposes, using the same session as past session
+      // In a real app, you would filter by date and separate upcoming/past
+      setPastSessions(sessions.slice(0, -1).reverse()) // Exclude the most recent and reverse to show newest first
+    }
+  }, [])
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }
+    return new Date(dateString).toLocaleDateString('en-US', options)
   }
-
-  const pastSessions = [
-    {
-      time: "12:00 AM",
-      doctor: "Dr. Ramesh Naik",
-      type: "Previous Session",
-      date: "Tuesday, March 21, 2023",
-    },
-    {
-      time: "10:30 AM",
-      doctor: "Dr. Suresh Sawant",
-      type: "Previous Session",
-      date: "Tuesday, March 19, 2023",
-    },
-    {
-      time: "09:30 AM",
-      doctor: "Dr. Neeta Singh",
-      type: "Previous Session",
-      date: "Tuesday, Feb 29, 2023",
-    },
-  ]
 
   return (
     <Box
@@ -212,7 +230,8 @@ export default function Dashboard() {
       </Box>
 
       {/* Content */}
-      <Box sx={{ px: 3 }}>
+
+        <Box sx={{ px: 3 }}>
         {/* Upcoming Session */}
         <Typography
           sx={{
@@ -225,141 +244,142 @@ export default function Dashboard() {
           Upcoming Session
         </Typography>
 
-        <Card
-          sx={{
-            mb: 3,
-            borderRadius: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-            bgcolor: "rgba(255,255,255,0.9)",
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <Box sx={{ mr: 2 }}>
-                <Typography
-                  sx={{
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: "#000",
-                    lineHeight: 1,
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {upcomingSession.time}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "14px",
-                    color: "#6D6A5D",
-                    mt: 0.5,
-                  }}
-                >
-                  {upcomingSession.location}
-                </Typography>
-              </Box>
-              {/* Vertical divider */}
-              <Box
-                sx={{
-                  width: "1px",
-                  height: "60px",
-                  bgcolor: "#E5E7EB",
-                  mx: 2,
-                }}
-              />
-              <Avatar
-                sx={{
-                  width: 48,
-                  height: 48,
-                  mr: 1.5,
-                  marginBottom: "10px",
-                  bgcolor: "#E5E7EB",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-                 alt="Doctor Portrait"
-                 src={doctorPortrait.src} 
-              />
-              <Box sx={{ flexGrow: 1 }}>
-                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        {upcomingSession ? (
+          <Card
+            sx={{
+              mb: 3,
+              borderRadius: "16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              bgcolor: "rgba(255,255,255,0.9)",
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <Box sx={{ mr: 2 }}>
                   <Typography
                     sx={{
-                      fontSize: "16px",
+                      fontSize: "20px",
                       fontWeight: 600,
                       color: "#000",
+                      lineHeight: 1,
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {upcomingSession.doctor}
+                    {upcomingSession.sessionTime}
                   </Typography>
-                  <IconButton size="small" sx={{ color: "#666" }}>
-                    <KeyboardArrowDown sx={{ fontSize: "20px" }} />
-                  </IconButton>
+                  <Typography
+                    sx={{
+                      fontSize: "14px",
+                      color: "#6D6A5D",
+                      mt: 0.5,
+                    }}
+                  >
+                    {upcomingSession.sessionMode === 'in-person' ? 'Clinic Location' : 'Online Session'}
+                  </Typography>
                 </Box>
+                {/* Vertical divider */}
+                <Box
+                  sx={{
+                    width: "1px",
+                    height: "60px",
+                    bgcolor: "#E5E7EB",
+                    mx: 2,
+                  }}
+                />
+                <Avatar
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    mr: 1.5,
+                    marginBottom: "10px",
+                    bgcolor: "#E5E7EB",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  alt="Doctor Portrait"
+                  src={doctorPortrait.src} 
+                />
+                <Box sx={{ flexGrow: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Typography
+                      sx={{
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "#000",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {upcomingSession.practitioner.name}
+                    </Typography>
+                    <IconButton size="small" sx={{ color: "#666" }}>
+                      <KeyboardArrowDown sx={{ fontSize: "20px" }} />
+                    </IconButton>
+                  </Box>
 
-                <img src={CallIcon.src} alt="Call Icon" style={{ width: "25px", height: "25px" }} />
-
+                  <img src={CallIcon.src} alt="Call Icon" style={{ width: "25px", height: "25px" }} />
+                </Box>
               </Box>
-            </Box>
 
-            {/* Session Duration and Mode - now stacked and without background */}
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
-                <AccessTime sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
-                <Typography sx={{ fontSize: "12px", color: "#666" }}>
-                  Session Duration: {upcomingSession.duration}
+              {/* Session Duration and Mode */}
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
+                  <AccessTime sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
+                  <Typography sx={{ fontSize: "12px", color: "#666" }}>
+                    Session Type: {upcomingSession.sessionType}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <LocationOn sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
+                  <Typography sx={{ fontSize: "12px", color: "#666" }}>
+                    Session Mode: {upcomingSession.sessionMode}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    height: "43px",
+                    width: "197px",
+                    whiteSpace: "nowrap",
+                    background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
+                    borderRadius: "12px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    py: 1.5,
+                    px: 3,
+                    color: "white",
+                    "&:hover": {
+                      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)",
+                    },
+                    boxShadow: "none",
+                  }}
+                >
+                  Mark as Completed
+                </Button>
+
+                <Typography
+                  sx={{
+                    fontSize: "12px",
+                    color: "#666",
+                    pl: 1,
+                  }}
+                >
+                  Scheduled for: <br/>
+                  <span style={{ whiteSpace: "nowrap" }}>
+                    {formatDate(upcomingSession.sessionDate)}
+                  </span>
                 </Typography>
               </Box>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <LocationOn sx={{ fontSize: "14px", color: "#666", mr: 0.5 }} />
-                <Typography sx={{ fontSize: "12px", color: "#666" }}>Session Mode: {upcomingSession.mode}</Typography>
-              </Box>
-            </Box>
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-
-         
-
-              <Button
-  variant="contained"
-  sx={{
-    height: "43px",
-    width: "197px",
-    whiteSpace: "nowrap",
-    background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
-    borderRadius: "12px",
-    textTransform: "none",
-    fontWeight: 600,
-    fontSize: "14px",
-    py: 1.5,
-    px: 3,
-    color: "white", // Ensure text is readable
-    "&:hover": {
-      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
-    },
-    boxShadow: "none", // Remove default shadow if needed
-  }}
->
-  Mark as Completed
-</Button>
-
-              <Typography
-                sx={{
-                  fontSize: "12px",
-                  color: "#666",
-                  pl: 1,
-                  // textAlign: "right",
-                }}
-              >
-                Previous Session: <br/>
-                
-                <span style={{ whiteSpace:"nowrap" }}>
-                 {upcomingSession.previousDate}
-                </span>
-                
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <Typography sx={{ mb: 3, color: "#666" }}>
+            No upcoming sessions scheduled.
+          </Typography>
+        )}
 
         {/* Past Sessions */}
         <Typography
@@ -373,69 +393,75 @@ export default function Dashboard() {
           Past Sessions
         </Typography>
 
-        <Card
-          sx={{
-            borderRadius: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-            bgcolor: "rgba(255,255,255,0.9)",
-            mb: 3,
-          }}
-        >
-          <CardContent sx={{ p: 0 }}>
-            {pastSessions.map((session, index) => (
-              <Box
-                key={index}
-                sx={{
-                  p: 3,
-                  borderBottom: index < pastSessions.length - 1 ? "1px solid #F3F4F6" : "none",
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                  <Typography
-                    sx={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      color: "#000",
-                      mr: 3,
-                      minWidth: "70px",
-                    }}
-                  >
-                    {session.time}
-                  </Typography>
-                  <Box sx={{ flex: 1 }}>
+        {pastSessions.length > 0 ? (
+          <Card
+            sx={{
+              borderRadius: "16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              bgcolor: "rgba(255,255,255,0.9)",
+              mb: 3,
+            }}
+          >
+            <CardContent sx={{ p: 0 }}>
+              {pastSessions.map((session, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    p: 3,
+                    borderBottom: index < pastSessions.length - 1 ? "1px solid #F3F4F6" : "none",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                     <Typography
                       sx={{
-                        fontSize: "14px",
+                        fontSize: "16px",
                         fontWeight: 600,
                         color: "#000",
-                        mb: 0.5,
+                        mr: 3,
+                        minWidth: "70px",
                       }}
                     >
-                      {session.doctor}
+                      {session.sessionTime}
                     </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "12px",
-                        color: "#666",
-                        mb: 0.5,
-                      }}
-                    >
-                      {session.type}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: "12px",
-                        color: "#666",
-                      }}
-                    >
-                      {session.date}
-                    </Typography>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        sx={{
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#000",
+                          mb: 0.5,
+                        }}
+                      >
+                        {session.practitioner.name}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "12px",
+                          color: "#666",
+                          mb: 0.5,
+                        }}
+                      >
+                        {session.sessionType}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: "12px",
+                          color: "#666",
+                        }}
+                      >
+                        {formatDate(session.sessionDate)}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Box>
-              </Box>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        ) : (
+          <Typography sx={{ mb: 3, color: "#666" }}>
+            No past sessions found.
+          </Typography>
+        )}
 
         {/* Schedule Now Button */}
         <Button
@@ -443,23 +469,25 @@ export default function Dashboard() {
           variant="contained"
           onClick={() => router.push("/doctors")}
           sx={{
-             height: "43px",
-              background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
+            height: "43px",
+            background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
             borderRadius: "12px",
             py: 2,
             fontSize: "16px",
             fontWeight: 600,
             textTransform: "none",
-            boxShadow: "0 4px 20px rgba(231, 161, 160, 0.3)", // Updated shadow color
+            boxShadow: "0 4px 20px rgba(231, 161, 160, 0.3)",
             mb: 3,
             "&:hover": {
-      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
-    },
+              background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)",
+            },
           }}
         >
           Schedule Now
         </Button>
       </Box>
+
+     
     </Box>
   )
 }

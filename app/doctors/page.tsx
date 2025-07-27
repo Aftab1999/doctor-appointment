@@ -1,78 +1,50 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   Box,
   Typography,
   TextField,
   InputAdornment,
-  Card,
-  CardContent,
-  Avatar,
-  Button,
   IconButton,
-  Collapse,
-} from "@mui/material"
-import { Search, ArrowBack, GridView, FilterList, KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material"
-import { useRouter } from "next/navigation"
-import Image from "next/image";
+} from "@mui/material";
+import {
+  Search,
+  ArrowBack,
+  GridView,
+  FilterList,
+} from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 import Person2 from "../../assets/svg-2.svg";
 import Person3 from "../../assets/svg-3.svg";
 import Person4 from "../../assets/svg-4.svg";
 import Person5 from "../../assets/svg-5.svg";
 
-export default function Doctors() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [expandedCard, setExpandedCard] = useState<number | null>(0) // First card expanded by default
+import DoctorCard from "../../components/DoctorCard";
+import doctors from "../../data/doctorsData";
 
-  const doctors = [
-    {
-      id: 0,
-      name: "Dr. Tejas Sharma",
-      phone: "+91 98765 43210",
-      expertise: "Gynaecology",
-      gender: "Male",
-      sessionMode: "In-Person & Online",
-      fee: "₹1,500/-",
-      avatar: Person2,
-    },
-    {
-      id: 1,
-      name: "Dr. Priya Kapoor",
-      phone: "+91 98765 43210",
-      expertise: "IVF Specialist",
-      gender: "Female",
-      sessionMode: "Online",
-      fee: "₹2,000/-",
-      avatar: Person3,
-    },
-    {
-      id: 2,
-      name: "Dr. Pranav Saxena",
-      phone: "+91 98765 43210",
-      expertise: "Gynaecology",
-      gender: "Male",
-      sessionMode: "In-Person",
-      fee: "₹1,800/-",
-      avatar: Person4,
-    },
-    {
-      id: 3,
-      name: "Dr. Toshib Bagde",
-      phone: "+91 98765 43210",
-      expertise: "Psychologist",
-      gender: "Male",
-      sessionMode: "Online",
-      fee: "₹1,200/-",
-      avatar: Person5,
-    },
-  ]
+const Doctors = () => {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedCard, setExpandedCard] = useState<number | null>(0);
 
-  const handleCardToggle = (cardId: number) => {
-    setExpandedCard(expandedCard === cardId ? null : cardId)
-  }
+  const handleCardToggle = (id: number) => {
+    setExpandedCard(expandedCard === id ? null : id);
+  };
+
+  const handleBook = (id: number) => {
+    const doctor = doctors.find((doc) => doc.id === id);
+    if (doctor) {
+      sessionStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+      router.push("/schedule");
+    }
+  };
+
+  const filteredDoctors = doctors.filter((doctor) =>
+    doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    doctor.expertise.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Box
@@ -97,70 +69,19 @@ export default function Doctors() {
           color: "#000",
         }}
       >
-        <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>9:41</Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Box sx={{ display: "flex", gap: "2px" }}>
-            <Box sx={{ width: "4px", height: "4px", bgcolor: "#000", borderRadius: "50%" }} />
-            <Box sx={{ width: "4px", height: "6px", bgcolor: "#000", borderRadius: "1px" }} />
-            <Box sx={{ width: "4px", height: "8px", bgcolor: "#000", borderRadius: "1px" }} />
-            <Box sx={{ width: "4px", height: "10px", bgcolor: "#000", borderRadius: "1px" }} />
-          </Box>
-          <Box sx={{ ml: 1, fontSize: "14px" }}>📶</Box>
-          <Box sx={{ ml: 1, fontSize: "14px" }}>📶</Box>
-          <Box
-            sx={{
-              width: "24px",
-              height: "12px",
-              border: "1px solid #000",
-              borderRadius: "2px",
-              ml: 1,
-              position: "relative",
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                right: "-3px",
-                top: "3px",
-                width: "2px",
-                height: "6px",
-                bgcolor: "#000",
-                borderRadius: "0 1px 1px 0",
-              },
-            }}
-          >
-            <Box
-              sx={{
-                width: "18px",
-                height: "8px",
-                bgcolor: "#4CAF50",
-                borderRadius: "1px",
-                m: "1px",
-              }}
-            />
-          </Box>
+        <Typography>9:41</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          📶 📶 🔋
         </Box>
       </Box>
 
       {/* Header */}
       <Box sx={{ px: 3, py: 2 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-          <IconButton
-            onClick={() => router.back()}
-            sx={{
-              color: "#000",
-              mr: 2,
-              p: 0.5,
-              "&:hover": { bgcolor: "rgba(0,0,0,0.04)" },
-            }}
-          >
-            <ArrowBack sx={{ fontSize: "24px" }} />
+          <IconButton onClick={() => router.back()} sx={{ mr: 2 }}>
+            <ArrowBack />
           </IconButton>
-          <Typography
-            sx={{
-              fontSize: "18px",
-              fontWeight: 600,
-              color: "#000",
-            }}
-          >
+          <Typography sx={{ fontSize: "18px", fontWeight: 600 }}>
             Available Doctors
           </Typography>
         </Box>
@@ -172,228 +93,49 @@ export default function Doctors() {
             placeholder="Search Psychologists"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search sx={{ color: "#999" }} />
+                </InputAdornment>
+              ),
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 bgcolor: "rgba(255,255,255,0.8)",
                 borderRadius: "12px",
                 height: "48px",
                 "& fieldset": { border: "none" },
-                "& input": {
-                  fontSize: "14px",
-                  color: "#666",
-                },
               },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search sx={{ color: "#999", fontSize: "20px" }} />
-                </InputAdornment>
-              ),
             }}
           />
           <IconButton
-            sx={{
-              bgcolor: "rgba(255,255,255,0.8)",
-              borderRadius: "12px",
-              width: 48,
-              height: 48,
-            }}
+            sx={{ bgcolor: "rgba(255,255,255,0.8)", borderRadius: "12px" }}
           >
-            <GridView sx={{ color: "#999", fontSize: "20px" }} />
+            <GridView />
           </IconButton>
           <IconButton
-            sx={{
-              bgcolor: "rgba(255,255,255,0.8)",
-              borderRadius: "12px",
-              width: 48,
-              height: 48,
-            }}
+            sx={{ bgcolor: "rgba(255,255,255,0.8)", borderRadius: "12px" }}
           >
-            <FilterList sx={{ color: "#999", fontSize: "20px" }} />
+            <FilterList />
           </IconButton>
         </Box>
       </Box>
 
-      {/* Doctors List */}
+      {/* Doctor Cards */}
       <Box sx={{ px: 3, pb: 3 }}>
-        {doctors.map((doctor) => (
-          <Card
+        {filteredDoctors.map((doctor) => (
+          <DoctorCard
             key={doctor.id}
-            sx={{
-              mb: 2,
-              borderRadius: "16px",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-              bgcolor: "rgba(255,255,255,0.9)",
-              overflow: "visible",
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  mb: expandedCard === doctor.id ? 2 : 0,
-                }}
-                onClick={() => handleCardToggle(doctor.id)}
-              >
-                <Box
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    // mr: 1,
-                    fontSize: "18px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {/* Render the SVG icon as a React component */}
-                  <Image src={doctor.avatar} alt={doctor.name} width={40} height={40} />
-
-                </Box>
-                <Box sx={{ flex: 1 }}>
-                  <Typography
-                    sx={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      color: "#000",
-                      mb: 0.5,
-                    }}
-                  >
-                    {doctor.name}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: "14px",
-                      color: "#666",
-                    }}
-                  >
-                    {doctor.phone}
-                  </Typography>
-                </Box>
-                <IconButton sx={{ p: 0.5 }}>
-                  {expandedCard === doctor.id ? (
-                    <KeyboardArrowUp sx={{ color: "#666", fontSize: "24px" }} />
-                  ) : (
-                    <KeyboardArrowDown sx={{ color: "#666", fontSize: "24px" }} />
-                  )}
-                </IconButton>
-              </Box>
-
-              <Collapse in={expandedCard === doctor.id}>
-                <Box>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-                    <Box>
-                      <Typography
-                        sx={{
-                          fontSize: "12px",
-                          color: "#666",
-                          mb: 0.5,
-                        }}
-                      >
-                        Expertise
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          fontWeight: 500,
-                          color: "#000",
-                        }}
-                      >
-                        {doctor.expertise}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography
-                        sx={{
-                          fontSize: "12px",
-                          color: "#666",
-                          mb: 0.5,
-                        }}
-                      >
-                        Gender
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          fontWeight: 500,
-                          color: "#000",
-                        }}
-                      >
-                        {doctor.gender}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-                    <Box>
-                      <Typography
-                        sx={{
-                          fontSize: "12px",
-                          color: "#666",
-                          mb: 0.5,
-                        }}
-                      >
-                        Session mode
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          fontWeight: 500,
-                          color: "#000",
-                        }}
-                      >
-                        {doctor.sessionMode}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography
-                        sx={{
-                          fontSize: "12px",
-                          color: "#666",
-                          mb: 0.5,
-                        }}
-                      >
-                        Session Fee
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: "14px",
-                          fontWeight: 500,
-                          color: "#000",
-                        }}
-                      >
-                        {doctor.fee}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    onClick={() => router.push("/schedule")}
-                    sx={{
-                      height: "43px",
-                      // bgcolor: "#E7A1A0",
-                       background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
-                      borderRadius: "12px",
-                      py: 1.5,
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      textTransform: "none",
-                      "&:hover": {
-      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
-    },
-                    }}
-                  >
-                    Book Now
-                  </Button>
-                </Box>
-              </Collapse>
-            </CardContent>
-          </Card>
+            doctor={doctor}
+            expandedCard={expandedCard}
+            handleCardToggle={handleCardToggle}
+            onBook={handleBook}
+          />
         ))}
       </Box>
     </Box>
-  )
-}
+  );
+};
+
+export default Doctors;

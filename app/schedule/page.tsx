@@ -30,6 +30,23 @@ import Person6 from "../../assets/svg-6.svg";
 import Person7 from "../../assets/svg-7.svg";
 
 
+import { useFormik } from "formik"
+import * as Yup from "yup"
+
+const validationSchema = Yup.object().shape({
+  sessionMode: Yup.string().required("Session mode is required"),
+  sessionDate: Yup.date().required("Session date is required"),
+  sessionTime: Yup.string().required("Session time is required"),
+  sessionDetails: Yup.string(),
+  onlineSessionLink: Yup.string().when("sessionMode", (sessionMode, schema) => 
+    sessionMode && sessionMode[0] === "online"
+      ? schema.required("Online session link is required for online sessions")
+      : schema.notRequired()
+  ),
+  sessionType: Yup.string().required("Session type is required"),
+})
+
+
 
 export default function ScheduleSession() {
   const router = useRouter()
@@ -64,21 +81,70 @@ export default function ScheduleSession() {
     { value: "consultation", label: "Consultation" },
   ]
 
-  const handleSessionModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newMode = event.target.value as string // Explicitly cast to string
-    setSessionMode(newMode)
+const getTodayDate = () => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
-    // Update session type based on mode
-    if (newMode === "online") {
-      setSessionType("counselling")
-    } else {
-      setSessionType("counselling-1hr")
+const formik = useFormik({
+  initialValues: {
+    sessionMode: "in-person",
+    sessionDate: getTodayDate(), // This will set today's date as default
+    sessionTime: "",
+    sessionDetails: "",
+    onlineSessionLink: "",
+    sessionType: "counselling-1hr",
+  },
+  validationSchema,
+  onSubmit: (values) => {
+    // Save to local storage
+    const sessions = JSON.parse(localStorage.getItem("scheduledSessions") || "[]")
+    const newSession = {
+      ...values,
+      patient,
+      practitioner,
+      createdAt: new Date().toISOString(),
     }
-  }
+    sessions.push(newSession)
+    localStorage.setItem("scheduledSessions", JSON.stringify(sessions))
+    
+    // Log and navigate (navigation will be added in next phase)
+    console.log("Form submitted:", values)
+    // router.push('/dashboard') - will be added in next phase
+  },
+})
 
-  const handleTimeConfirm = (time: string) => {
-    setSessionTime(time)
+
+// const handleSessionModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//   const newMode = event.target.value as string 
+//   setSessionMode(newMode)
+
+//   // Update session type based on mode
+//   if (newMode === "online") {
+//     setSessionType("counselling")
+//   } else {
+//     setSessionType("counselling-1hr")
+//   }
+// }
+
+const handleSessionModeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const newMode = event.target.value;
+  formik.setFieldValue("sessionMode", newMode);
+  
+  // Update session type based on mode if needed
+  if (newMode === "online") {
+    formik.setFieldValue("sessionType", "counselling");
+  } else {
+    formik.setFieldValue("sessionType", "counselling-1hr");
   }
+};
+
+const handleTimeConfirm = (time: string) => {
+  setSessionTime(time)
+}
 
   return (
     <Box
@@ -246,6 +312,7 @@ export default function ScheduleSession() {
         >
           Assign Practitioner
         </Typography>
+
         <Card
           sx={{
             mb: 3,
@@ -299,6 +366,10 @@ export default function ScheduleSession() {
         </Card>
 
         {/* Session Type Section */}
+
+            <Box component="form" onSubmit={formik.handleSubmit} sx={{ px: 3, pb: 3 }}>
+
+
         <Typography
           sx={{
             fontSize: "14px",
@@ -320,8 +391,9 @@ export default function ScheduleSession() {
           <CardContent sx={{ p: 2.5 }}>
             <FormControl fullWidth>
               <Select
-                value={sessionType || ""} // Ensure value is always a string, even if sessionType is initially empty
-                onChange={(e) => setSessionType(e.target.value as string)} // Explicitly cast to string
+                name="sessionType"
+                value={formik.values.sessionType}
+                onChange={formik.handleChange}
                 open={sessionTypeOpen}
                 onOpen={() => setSessionTypeOpen(true)}
                 onClose={() => setSessionTypeOpen(false)}
@@ -357,343 +429,384 @@ export default function ScheduleSession() {
         </Card>
 
         {/* Session Mode Section */}
-        <Typography
-          sx={{
-            fontSize: "14px",
-            color: "#999",
-            mb: 1,
-            fontWeight: 400,
-          }}
-        >
-          Session Mode
-        </Typography>
-        <Box
-          sx={{
-            bgcolor: "rgba(255,255,255,0.6)",
-            borderRadius: "12px",
-            p: 2.5,
-            mb: 3,
-          }}
-        >
-          <FormControl component="fieldset">
-            <RadioGroup row value={sessionMode} onChange={handleSessionModeChange} sx={{ gap: 4 }}>
-              <FormControlLabel
-                value="in-person"
-                control={
-                  <Radio
-                    sx={{
-                      color: "#D1D5DB",
-                      "&.Mui-checked": {
-                        color: "#8B5CF6",
-                      },
-                      "& .MuiSvgIcon-root": {
-                        fontSize: 20,
-                      },
-                    }}
-                  />
-                }
-                label={
-                  <Typography
-                    sx={{
-                      fontSize: "16px",
-                      color: "#000",
-                      fontWeight: 500,
-                      ml: 0.5,
-                    }}
-                  >
-                    In-Person
-                  </Typography>
-                }
-              />
-              <FormControlLabel
-                value="online"
-                control={
-                  <Radio
-                    sx={{
-                      color: "#D1D5DB",
-                      "&.Mui-checked": {
-                        color: "#8B5CF6",
-                      },
-                      "& .MuiSvgIcon-root": {
-                        fontSize: 20,
-                      },
-                    }}
-                  />
-                }
-                label={
-                  <Typography
-                    sx={{
-                      fontSize: "16px",
-                      color: "#000",
-                      fontWeight: 500,
-                      ml: 0.5,
-                    }}
-                  >
-                    Online
-                  </Typography>
-                }
-              />
-            </RadioGroup>
-          </FormControl>
-        </Box>
 
-        {/* Date and Time Section */}
-        <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#999",
-                mb: 1,
-                fontWeight: 400,
-              }}
-            >
-              Session Date
-            </Typography>
-            <TextField
-              fullWidth
-              type="date"
-              value={sessionDate}
-              onChange={(e) => setSessionDate(e.target.value)}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "12px",
-                  bgcolor: "rgba(255,255,255,0.9)",
-                  height: "48px",
-                  "& fieldset": {
-                    borderColor: "#E5E7EB",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#D1D5DB",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#8B5CF6",
-                  },
-                  "& input": {
-                    fontSize: "16px",
-                    color: "#000",
-                    fontWeight: 500,
-                  },
-                },
-              }}
-            // InputProps={{
-            //   endAdornment: (
-            //     <InputAdornment position="end">
-            //       <CalendarToday sx={{ color: "#999", fontSize: "20px" }} />
-            //     </InputAdornment>
-            //   ),
-            // }}
-            />
-          </Box>
-          <Box sx={{ flex: 1 }}>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#999",
-                mb: 1,
-                fontWeight: 400,
-              }}
-            >
-              Session Time Slot
-            </Typography>
-            <TextField
-              fullWidth
-              value={sessionTime || "HH : MM"} // Display placeholder if sessionTime is empty
-              placeholder="HH : MM"
-              onClick={() => setIsTimeModalOpen(true)}
-              // readOnly
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "12px",
-                  bgcolor: "rgba(255,255,255,0.9)",
-                  height: "48px",
-                  cursor: "pointer",
-                  "& fieldset": {
-                    borderColor: "#E5E7EB",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#D1D5DB",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#8B5CF6",
-                  },
-                  "& input": {
-                    fontSize: "16px",
-                    color: sessionTime ? "#000" : "#999", // Change color based on whether time is selected
-                    fontWeight: sessionTime ? 500 : 400,
-                    cursor: "pointer",
-                  },
-                },
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <AccessTime sx={{ color: "#999", fontSize: "20px" }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-        </Box>
+{/* // Session Mode Section */}
 
-        {/* Conditional Online Session Link Section - Only show when Online is selected */}
-        {sessionMode === "online" && (
-          <Box sx={{ mb: 3 }}>
-            <Typography
-              sx={{
-                fontSize: "14px",
-                color: "#999",
-                mb: 1,
-                fontWeight: 400,
-              }}
-            >
-              Online Session Link
-            </Typography>
-            <Box
-              sx={{
-                bgcolor: "#FFF",
-                borderRadius: "12px",
-                // p: 2.5,
-              }}
-            >
-              <TextField
-                fullWidth
-                placeholder="Add Online Session Link or WhatsApp Number"
-                value={onlineSessionLink}
-                onChange={(e) => setOnlineSessionLink(e.target.value)}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    bgcolor: "transparent",
-                    height: "48px",
-                    "& fieldset": {
-                      border: "none",
-                    },
-                    "& input": {
-                      fontSize: "16px",
-                      color: "#000",
-                      fontWeight: 400,
-                    },
-                    "& input::placeholder": {
-                      color: "#999",
-                      opacity: 1,
-                    },
-                  },
-                }}
-              />
-            </Box>
-          </Box>
-        )}
 
-        {/* Session Details Section */}
-        <Typography
-          sx={{
-            fontSize: "14px",
-            color: "#999",
-            mb: 1,
-            fontWeight: 400,
-          }}
-        >
-          Session Details (Optional)
-        </Typography>
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          placeholder="Enter session details here"
-          value={sessionDetails}
-          onChange={(e) => setSessionDetails(e.target.value)}
-          sx={{
-            mb: 4,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-              bgcolor: "rgba(255,255,255,0.9)",
-              "& fieldset": {
-                borderColor: "#E5E7EB",
-              },
-              "&:hover fieldset": {
-                borderColor: "#D1D5DB",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#8B5CF6",
-              },
-              "& textarea": {
-                fontSize: "16px",
-                color: "#000",
-                fontWeight: 400,
-              },
-              "& textarea::placeholder": {
-                color: "#999",
-                opacity: 1,
-              },
-            },
-          }}
-        />
+<Typography
+  sx={{
+    fontSize: "14px",
+    color: "#999",
+    mb: 1,
+    fontWeight: 400,
+  }}
+>
+  Session Mode
+</Typography>
 
-        {/* Action Buttons */}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={() => router.back()}
+<Box
+  sx={{
+    bgcolor: "rgba(255,255,255,0.6)",
+    borderRadius: "12px",
+    p: 2.5,
+    mb: 3,
+  }}
+>
+  <FormControl component="fieldset" error={formik.touched.sessionMode && Boolean(formik.errors.sessionMode)}>
+    <RadioGroup
+      row
+      name="sessionMode"
+      value={formik.values.sessionMode}
+      onChange={formik.handleChange} // Use Formik's handleChange directly
+      sx={{ gap: 4 }}
+    >
+      <FormControlLabel
+        value="in-person"
+        control={
+          <Radio
             sx={{
-              flex: 1,
-              borderColor: "#CC627B", // Border color
-              color: "#CC627B", // Text color
-              borderRadius: "12px",
-              py: 1.5,
-              fontSize: "16px",
-              fontWeight: 600,
-              textTransform: "none",
-              "&:hover": {
-                borderColor: "#CC627B", // Keep border color on hover
-                bgcolor: "rgba(204, 98, 123, 0.05)", // Subtle background on hover
+              color: "#D1D5DB",
+              "&.Mui-checked": {
+                color: "#8B5CF6",
               },
+              "& .MuiSvgIcon-root": {
+                fontSize: 20,
+              },
+            }}
+          />
+        }
+        label={
+          <Typography
+            sx={{
+              fontSize: "16px",
+              color: "#000",
+              fontWeight: 500,
+              ml: 0.5,
             }}
           >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              console.log("Form Data:", {
-                sessionMode,
-                sessionType,
-                sessionDate,
-                sessionTime,
-                onlineSessionLink,
-                sessionDetails,
-              })
-            }}
-            sx={{
-              flex: 1,
-              // bgcolor: "#F0C8C7",
-               background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
-              borderRadius: "12px",
-              py: 1.5,
-              fontSize: "16px",
-              fontWeight: 600,
-              textTransform: "none",
-              boxShadow: "0 4px 12px rgba(240, 200, 199, 0.3)", // Updated shadow color
-              // "&:hover": {
-              //   bgcolor: "#E7A1A0", 
-              //   boxShadow: "0 6px 16px rgba(240, 200, 199, 0.4)",
-              // },
-               "&:hover": {
-      background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)", // Darker gradient on hover
-    },
-            }}
-          >
-            Confirm
-          </Button>
-        </Box>
-      </Box>
-
-      {/* Time Selection Modal */}
-      <TimeSelectionModal
-        open={isTimeModalOpen}
-        onClose={() => setIsTimeModalOpen(false)}
-        onConfirm={handleTimeConfirm}
-        selectedTime={sessionTime}
+            In-Person
+          </Typography>
+        }
       />
+      <FormControlLabel
+        value="online"
+        control={
+          <Radio
+            sx={{
+              color: "#D1D5DB",
+              "&.Mui-checked": {
+                color: "#8B5CF6",
+              },
+              "& .MuiSvgIcon-root": {
+                fontSize: 20,
+              },
+            }}
+          />
+        }
+        label={
+          <Typography
+            sx={{
+              fontSize: "16px",
+              color: "#000",
+              fontWeight: 500,
+              ml: 0.5,
+            }}
+          >
+            Online
+          </Typography>
+        }
+      />
+    </RadioGroup>
+    {formik.touched.sessionMode && formik.errors.sessionMode && (
+      <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
+        {formik.errors.sessionMode}
+      </Typography>
+    )}
+  </FormControl>
+</Box>
+
+
+
+{/* Date and Time Section */}
+<Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+
+  <Box sx={{ flex: 1 }}>
+  <Typography
+    sx={{
+      fontSize: "14px",
+      color: "#999",
+      mb: 1,
+      fontWeight: 400,
+    }}
+  >
+    Session Date
+  </Typography>
+  <TextField
+    fullWidth
+    type="date"
+    name="sessionDate"
+    value={formik.values.sessionDate}
+    onChange={formik.handleChange}
+    onBlur={formik.handleBlur}
+    error={formik.touched.sessionDate && Boolean(formik.errors.sessionDate)}
+    helperText={formik.touched.sessionDate && formik.errors.sessionDate}
+    sx={{
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "12px",
+        bgcolor: "rgba(255,255,255,0.9)",
+        height: "48px",
+        "& fieldset": {
+          borderColor: "#E5E7EB",
+        },
+        "&:hover fieldset": {
+          borderColor: "#D1D5DB",
+        },
+        "&.Mui-focused fieldset": {
+          borderColor: "#8B5CF6",
+        },
+        "& input": {
+          fontSize: "16px",
+          color: "#000",
+          fontWeight: 500,
+        },
+      },
+    }}
+    InputProps={{
+      inputProps: {
+        min: getTodayDate() // Optional: prevents selecting dates in the past
+      }
+    }}
+  />
+</Box>
+
+  <Box sx={{ flex: 1 }}>
+    <Typography
+      sx={{
+        fontSize: "14px",
+        color: "#999",
+        mb: 1,
+        fontWeight: 400,
+        whiteSpace: "nowrap",
+      }}
+    >
+      Session Time Slot
+    </Typography>
+    <TextField
+      fullWidth
+      name="sessionTime"
+      value={formik.values.sessionTime || "HH : MM"}
+      placeholder="HH : MM"
+      onClick={() => setIsTimeModalOpen(true)}
+      error={formik.touched.sessionTime && Boolean(formik.errors.sessionTime)}
+      helperText={formik.touched.sessionTime && formik.errors.sessionTime}
+      sx={{
+        "& .MuiOutlinedInput-root": {
+          borderRadius: "12px",
+          bgcolor: "rgba(255,255,255,0.9)",
+          height: "48px",
+          cursor: "pointer",
+          "& fieldset": {
+            borderColor: "#E5E7EB",
+          },
+          "&:hover fieldset": {
+            borderColor: "#D1D5DB",
+          },
+          "&.Mui-focused fieldset": {
+            borderColor: "#8B5CF6",
+          },
+          "& input": {
+            fontSize: "16px",
+            color: formik.values.sessionTime ? "#000" : "#999",
+            fontWeight: formik.values.sessionTime ? 500 : 400,
+            cursor: "pointer",
+          },
+        },
+      }}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <AccessTime sx={{ color: "#999", fontSize: "20px" }} />
+          </InputAdornment>
+        ),
+      }}
+    />
+  </Box>
+</Box>
+
+{/* Conditional Online Session Link Section - Only show when Online is selected */}
+{formik.values.sessionMode === "online" && (
+  <Box sx={{ mb: 3 }}>
+    <Typography
+      sx={{
+        fontSize: "14px",
+        color: "#999",
+        mb: 1,
+        fontWeight: 400,
+      }}
+    >
+      Online Session Link
+    </Typography>
+    <Box
+      sx={{
+        bgcolor: "#FFF",
+        borderRadius: "12px",
+      }}
+    >
+      <TextField
+        fullWidth
+        name="onlineSessionLink"
+        placeholder="Add Online Session Link or WhatsApp Number"
+        value={formik.values.onlineSessionLink}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.onlineSessionLink && Boolean(formik.errors.onlineSessionLink)}
+        helperText={formik.touched.onlineSessionLink && formik.errors.onlineSessionLink}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            bgcolor: "transparent",
+            height: "48px",
+            "& fieldset": {
+              border: "none",
+            },
+            "& input": {
+              fontSize: "16px",
+              color: "#000",
+              fontWeight: 400,
+            },
+            "& input::placeholder": {
+              color: "#999",
+              opacity: 1,
+            },
+          },
+        }}
+      />
+    </Box>
+  </Box>
+)}
+
+{/* Session Details Section */}
+<Typography
+  sx={{
+    fontSize: "14px",
+    color: "#999",
+    mb: 1,
+    fontWeight: 400,
+  }}
+>
+  Session Details (Optional)
+</Typography>
+<TextField
+  fullWidth
+  multiline
+  rows={4}
+  name="sessionDetails"
+  placeholder="Enter session details here"
+  value={formik.values.sessionDetails}
+  onChange={formik.handleChange}
+  sx={{
+    mb: 4,
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "12px",
+      bgcolor: "rgba(255,255,255,0.9)",
+      "& fieldset": {
+        borderColor: "#E5E7EB",
+      },
+      "&:hover fieldset": {
+        borderColor: "#D1D5DB",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#8B5CF6",
+      },
+      "& textarea": {
+        fontSize: "16px",
+        color: "#000",
+        fontWeight: 400,
+      },
+      "& textarea::placeholder": {
+        color: "#999",
+        opacity: 1,
+      },
+    },
+  }}
+/>
+
+{/* Action Buttons */}
+<Box sx={{ display: "flex", gap: 2 }}>
+  <Button
+    variant="outlined"
+    onClick={() => router.back()}
+    sx={{
+      flex: 1,
+      borderColor: "#CC627B",
+      color: "#CC627B",
+      borderRadius: "12px",
+      py: 1.5,
+      fontSize: "16px",
+      fontWeight: 600,
+      textTransform: "none",
+      "&:hover": {
+        borderColor: "#CC627B",
+        bgcolor: "rgba(204, 98, 123, 0.05)",
+      },
+    }}
+  >
+    Cancel
+  </Button>
+  <Button
+  onClick={() => router.push("/")}
+    type="submit"
+    variant="contained"
+    sx={{
+      flex: 1,
+      background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
+      borderRadius: "12px",
+      py: 1.5,
+      fontSize: "16px",
+      fontWeight: 600,
+      textTransform: "none",
+      boxShadow: "0 4px 12px rgba(240, 200, 199, 0.3)",
+      "&:hover": {
+        background: "linear-gradient(90deg, #A992D0 0%, #DB908F 100%)",
+      },
+    }}
+  >
+    Confirm
+  </Button>
+</Box>
+
+{/* Time Selection Modal */}
+
+
+{/* <TimeSelectionModal
+  open={isTimeModalOpen}
+  onClose={() => setIsTimeModalOpen(false)}
+  onConfirm={handleTimeConfirm}
+  selectedTime={formik.values.sessionTime}
+/> */}
+
+<TimeSelectionModal
+  open={isTimeModalOpen}
+  onClose={() => setIsTimeModalOpen(false)}
+  onConfirm={(time) => formik.setFieldValue("sessionTime", time)}
+  selectedTime={formik.values.sessionTime}
+  disabledTimes={["06:00 PM", "07:00 PM"]} // Example disabled times
+  timeSlotCategories={[
+    {
+      name: "morning",
+      slots: ["08:00 AM", "09:00 AM", "10:00 AM"],
+    },
+    {
+      name: "afternoon",
+      slots: ["12:00 PM", "01:00 PM", "02:00 PM"],
+    },
+    // Add more custom time slots as needed
+  ]}
+/>
+
+       
+    </Box>
+    </Box>
+
     </Box>
   )
 }

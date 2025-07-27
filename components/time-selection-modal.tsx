@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-
+import { useState, useEffect } from "react"
 import * as React from "react"
 import {
   Dialog,
@@ -25,40 +24,78 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />
 })
 
+interface TimeSlotCategory {
+  name: string
+  slots: string[]
+  disabledSlots?: string[]
+}
+
 interface TimeSelectionModalProps {
   open: boolean
   onClose: () => void
   onConfirm: (time: string) => void
   selectedTime: string
+  timeSlotCategories?: TimeSlotCategory[]
+  defaultExpandedCategory?: string
+  disabledTimes?: string[]
 }
 
-export default function TimeSelectionModal({ open, onClose, onConfirm, selectedTime }: TimeSelectionModalProps) {
+export default function TimeSelectionModal({
+  open,
+  onClose,
+  onConfirm,
+  selectedTime,
+  timeSlotCategories,
+  defaultExpandedCategory = "morning",
+  disabledTimes = [],
+}: TimeSelectionModalProps) {
   const [currentTime, setCurrentTime] = useState(selectedTime)
-  const [expandedPanel, setExpandedPanel] = useState<string | false>("morning")
+  const [expandedPanel, setExpandedPanel] = useState<string | false>(defaultExpandedCategory)
 
-  const timeSlots = {
-    morning: ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM"],
-    afternoon: ["12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM"],
-    evening: ["04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM"],
-    night: ["08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM"],
-  }
+  // Default time slots if none provided
+  const defaultTimeSlots: TimeSlotCategory[] = [
+    {
+      name: "morning",
+      slots: ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM"],
+    },
+    {
+      name: "afternoon",
+      slots: ["12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM"],
+    },
+    {
+      name: "evening",
+      slots: ["04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM"],
+    },
+    {
+      name: "night",
+      slots: ["08:00 PM", "09:00 PM", "10:00 PM", "11:00 PM"],
+    },
+  ]
+
+  const categories = timeSlotCategories || defaultTimeSlots
 
   const handleTimeSelect = (time: string) => {
     setCurrentTime(time)
   }
 
   const handleConfirm = () => {
-    onConfirm(currentTime)
-    onClose()
+    if (currentTime) {
+      onConfirm(currentTime)
+      onClose()
+    }
   }
 
   const handlePanelChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpandedPanel(isExpanded ? panel : false)
   }
 
-  React.useEffect(() => {
+  const isTimeDisabled = (time: string) => {
+    return disabledTimes.includes(time)
+  }
+
+  useEffect(() => {
     setCurrentTime(selectedTime)
-  }, [selectedTime])
+  }, [selectedTime, open]) // Reset when selectedTime changes or modal reopens
 
   return (
     <Dialog
@@ -71,7 +108,7 @@ export default function TimeSelectionModal({ open, onClose, onConfirm, selectedT
           bottom: 0,
           margin: 0,
           width: "100%",
-          maxWidth: "400px", // Match the max-width of the main container
+          maxWidth: "400px",
           borderRadius: "16px 16px 0 0",
           boxShadow: "0 -8px 24px rgba(0,0,0,0.1)",
           maxHeight: "80vh",
@@ -87,23 +124,23 @@ export default function TimeSelectionModal({ open, onClose, onConfirm, selectedT
           </IconButton>
         </Box>
 
-        {Object.entries(timeSlots).map(([category, times]) => (
+        {categories.map((category) => (
           <Accordion
-            key={category}
-            expanded={expandedPanel === category}
-            onChange={handlePanelChange(category)}
+            key={category.name}
+            expanded={expandedPanel === category.name}
+            onChange={handlePanelChange(category.name)}
             disableGutters
             elevation={0}
             sx={{
               bgcolor: "transparent",
-              "&:before": { display: "none" }, // Remove default border
-              borderBottom: "1px solid #F3F4F6", // Custom divider
+              "&:before": { display: "none" },
+              borderBottom: "1px solid #F3F4F6",
               "&:last-child": { borderBottom: "none" },
             }}
           >
             <AccordionSummary
               expandIcon={
-                expandedPanel === category ? (
+                expandedPanel === category.name ? (
                   <KeyboardArrowUp sx={{ color: "#666" }} />
                 ) : (
                   <KeyboardArrowDown sx={{ color: "#666" }} />
@@ -118,48 +155,42 @@ export default function TimeSelectionModal({ open, onClose, onConfirm, selectedT
               }}
             >
               <Typography sx={{ fontSize: "16px", fontWeight: 600, textTransform: "capitalize" }}>
-                {category}
+                {category.name}
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ px: 0, pb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {times.map((time) => (
-                <Button
-                  key={time}
-                  variant="outlined"
-                  onClick={() => handleTimeSelect(time)}
-                  sx={{
-                    minWidth: "80px",
-                    height: "40px",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    textTransform: "none",
-                    // borderColor: currentTime === time ? "#8B5CF6" : "#E5E7EB",
-                    borderColor: currentTime === time ? "#CC627B" : "#CC627B",
-                    color: currentTime === time ? "#8B5CF6" : "#8B5CF6",
-                    bgcolor: currentTime === time ? "#dac9f4ff" : "transparent",
-                    "&:hover": {
-                      borderColor: "#8B5CF6",
-                      bgcolor: "rgba(139, 92, 246, 0.05)",
-                    },
-                    // Example of disabled times (adjust logic as needed)
-                    ...(time === "06:00 PM" || time === "07:00 PM"
-                      ? {
-                          borderColor: "#F3F4F6",
-                          color: "#D1D5DB",
-                          cursor: "not-allowed",
-                          "&:hover": {
-                            borderColor: "#F3F4F6",
-                            bgcolor: "transparent",
-                          },
+              {category.slots.map((time) => {
+                const disabled = isTimeDisabled(time)
+                const isSelected = currentTime === time
+                return (
+                  <Button
+                    key={time}
+                    variant="outlined"
+                    onClick={() => !disabled && handleTimeSelect(time)}
+                    sx={{
+                      minWidth: "80px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      textTransform: "none",
+                      borderColor: isSelected ? "#CC627B" : "#E5E7EB",
+                      color: isSelected ? "#FFFFFF" : disabled ? "#D1D5DB" : "#000000",
+                      bgcolor: isSelected ? "#CC627B" : disabled ? "#F3F4F6" : "transparent",
+                      ...( !disabled && {
+                        "&:hover": {
+                          borderColor: "#CC627B",
+                          bgcolor: "rgba(204, 98, 123, 0.1)",
                         }
-                      : {}),
-                  }}
-                  disabled={time === "06:00 PM" || time === "07:00 PM"} // Example disabled times
-                >
-                  {time}
-                </Button>
-              ))}
+                      }),
+                      pointerEvents: disabled ? "none" : "auto",
+                    }}
+                    disabled={disabled}
+                  >
+                    {time}
+                  </Button>
+                )
+              })}
             </AccordionDetails>
           </Accordion>
         ))}
@@ -188,18 +219,23 @@ export default function TimeSelectionModal({ open, onClose, onConfirm, selectedT
           <Button
             variant="contained"
             onClick={handleConfirm}
+            disabled={!currentTime}
             sx={{
               flex: 1,
-              bgcolor: "#E7A1A0", // Solid color as per new request
+              bgcolor: "#CC627B",
               borderRadius: "12px",
               py: 1.5,
               fontSize: "16px",
               fontWeight: 600,
               textTransform: "none",
-              boxShadow: "0 4px 12px rgba(231, 161, 160, 0.3)", // Updated shadow color
+              boxShadow: "0 4px 12px rgba(204, 98, 123, 0.3)",
               "&:hover": {
-                bgcolor: "#DB908F", // Slightly darker on hover
-                boxShadow: "0 6px 16px rgba(231, 161, 160, 0.4)",
+                bgcolor: "#B5576A",
+                boxShadow: "0 6px 16px rgba(204, 98, 123, 0.4)",
+              },
+              "&.Mui-disabled": {
+                bgcolor: "#F3F4F6",
+                color: "#D1D5DB",
               },
             }}
           >
