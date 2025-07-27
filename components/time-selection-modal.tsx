@@ -52,14 +52,14 @@ export default function TimeSelectionModal({
   const [currentTime, setCurrentTime] = useState(selectedTime)
   const [expandedPanel, setExpandedPanel] = useState<string | false>(defaultExpandedCategory)
 
-  // Default time slots if none provided
+  // Default time slots with all four categories
   const defaultTimeSlots: TimeSlotCategory[] = [
     {
       name: "morning",
       slots: ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM"],
     },
     {
-      name: "afternoon",
+      name: "afternoon", 
       slots: ["12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM"],
     },
     {
@@ -95,7 +95,7 @@ export default function TimeSelectionModal({
 
   useEffect(() => {
     setCurrentTime(selectedTime)
-  }, [selectedTime, open]) // Reset when selectedTime changes or modal reopens
+  }, [selectedTime, open])
 
   return (
     <Dialog
@@ -112,7 +112,6 @@ export default function TimeSelectionModal({
           borderRadius: "16px 16px 0 0",
           boxShadow: "0 -8px 24px rgba(0,0,0,0.1)",
           maxHeight: "80vh",
-          overflowY: "auto",
         },
       }}
     >
@@ -124,11 +123,135 @@ export default function TimeSelectionModal({
           </IconButton>
         </Box>
 
-        {categories.map((category) => (
+        {/* Time slot categories accordion */}
+        <Box sx={{ maxHeight: '60vh', overflowY: 'auto', mb: 2 }}>
+          {/* Morning */}
           <Accordion
-            key={category.name}
-            expanded={expandedPanel === category.name}
-            onChange={handlePanelChange(category.name)}
+            expanded={expandedPanel === "morning"}
+            onChange={handlePanelChange("morning")}
+            disableGutters
+            elevation={0}
+            sx={{
+              bgcolor: "transparent",
+              "&:before": { display: "none" },
+              borderBottom: "1px solid #F3F4F6",
+            }}
+          >
+            <AccordionSummary
+              expandIcon={
+                expandedPanel === "morning" ? (
+                  <KeyboardArrowUp sx={{ color: "#666" }} />
+                ) : (
+                  <KeyboardArrowDown sx={{ color: "#666" }} />
+                )
+              }
+              sx={{
+                px: 0,
+                minHeight: "48px",
+                "& .MuiAccordionSummary-content": { my: 1 },
+              }}
+            >
+              <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>Morning</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ px: 0, pb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {defaultTimeSlots[0].slots.map((time) => (
+                <TimeSlotButton 
+                  key={time}
+                  time={time}
+                  isSelected={currentTime === time}
+                  isDisabled={isTimeDisabled(time)}
+                  onClick={() => handleTimeSelect(time)}
+                />
+              ))}
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Afternoon */}
+          <Accordion
+            expanded={expandedPanel === "afternoon"}
+            onChange={handlePanelChange("afternoon")}
+            disableGutters
+            elevation={0}
+            sx={{
+              bgcolor: "transparent",
+              "&:before": { display: "none" },
+              borderBottom: "1px solid #F3F4F6",
+            }}
+          >
+            <AccordionSummary
+              expandIcon={
+                expandedPanel === "afternoon" ? (
+                  <KeyboardArrowUp sx={{ color: "#666" }} />
+                ) : (
+                  <KeyboardArrowDown sx={{ color: "#666" }} />
+                )
+              }
+              sx={{
+                px: 0,
+                minHeight: "48px",
+                "& .MuiAccordionSummary-content": { my: 1 },
+              }}
+            >
+              <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>Afternoon</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ px: 0, pb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {defaultTimeSlots[1].slots.map((time) => (
+                <TimeSlotButton 
+                  key={time}
+                  time={time}
+                  isSelected={currentTime === time}
+                  isDisabled={isTimeDisabled(time)}
+                  onClick={() => handleTimeSelect(time)}
+                />
+              ))}
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Evening */}
+          <Accordion
+            expanded={expandedPanel === "evening"}
+            onChange={handlePanelChange("evening")}
+            disableGutters
+            elevation={0}
+            sx={{
+              bgcolor: "transparent",
+              "&:before": { display: "none" },
+              borderBottom: "1px solid #F3F4F6",
+            }}
+          >
+            <AccordionSummary
+              expandIcon={
+                expandedPanel === "evening" ? (
+                  <KeyboardArrowUp sx={{ color: "#666" }} />
+                ) : (
+                  <KeyboardArrowDown sx={{ color: "#666" }} />
+                )
+              }
+              sx={{
+                px: 0,
+                minHeight: "48px",
+                "& .MuiAccordionSummary-content": { my: 1 },
+              }}
+            >
+              <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>Evening</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ px: 0, pb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {defaultTimeSlots[2].slots.map((time) => (
+                <TimeSlotButton 
+                  key={time}
+                  time={time}
+                  isSelected={currentTime === time}
+                  isDisabled={isTimeDisabled(time)}
+                  onClick={() => handleTimeSelect(time)}
+                />
+              ))}
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Night */}
+          <Accordion
+            expanded={expandedPanel === "night"}
+            onChange={handlePanelChange("night")}
             disableGutters
             elevation={0}
             sx={{
@@ -140,7 +263,7 @@ export default function TimeSelectionModal({
           >
             <AccordionSummary
               expandIcon={
-                expandedPanel === category.name ? (
+                expandedPanel === "night" ? (
                   <KeyboardArrowUp sx={{ color: "#666" }} />
                 ) : (
                   <KeyboardArrowDown sx={{ color: "#666" }} />
@@ -149,53 +272,27 @@ export default function TimeSelectionModal({
               sx={{
                 px: 0,
                 minHeight: "48px",
-                "& .MuiAccordionSummary-content": {
-                  my: 1,
-                },
+                "& .MuiAccordionSummary-content": { my: 1 },
               }}
             >
-              <Typography sx={{ fontSize: "16px", fontWeight: 600, textTransform: "capitalize" }}>
-                {category.name}
-              </Typography>
+              <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>Night</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ px: 0, pb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {category.slots.map((time) => {
-                const disabled = isTimeDisabled(time)
-                const isSelected = currentTime === time
-                return (
-                  <Button
-                    key={time}
-                    variant="outlined"
-                    onClick={() => !disabled && handleTimeSelect(time)}
-                    sx={{
-                      minWidth: "80px",
-                      height: "40px",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontWeight: 500,
-                      textTransform: "none",
-                      borderColor: isSelected ? "#CC627B" : "#E5E7EB",
-                      color: isSelected ? "#FFFFFF" : disabled ? "#D1D5DB" : "#000000",
-                      bgcolor: isSelected ? "#CC627B" : disabled ? "#F3F4F6" : "transparent",
-                      ...( !disabled && {
-                        "&:hover": {
-                          borderColor: "#CC627B",
-                          bgcolor: "rgba(204, 98, 123, 0.1)",
-                        }
-                      }),
-                      pointerEvents: disabled ? "none" : "auto",
-                    }}
-                    disabled={disabled}
-                  >
-                    {time}
-                  </Button>
-                )
-              })}
+              {defaultTimeSlots[3].slots.map((time) => (
+                <TimeSlotButton 
+                  key={time}
+                  time={time}
+                  isSelected={currentTime === time}
+                  isDisabled={isTimeDisabled(time)}
+                  onClick={() => handleTimeSelect(time)}
+                />
+              ))}
             </AccordionDetails>
           </Accordion>
-        ))}
+        </Box>
 
-        <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+        {/* Action buttons */}
+        <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
           <Button
             variant="outlined"
             onClick={onClose}
@@ -244,5 +341,46 @@ export default function TimeSelectionModal({
         </Box>
       </DialogContent>
     </Dialog>
+  )
+}
+
+// Reusable Time Slot Button Component
+function TimeSlotButton({
+  time,
+  isSelected,
+  isDisabled,
+  onClick,
+}: {
+  time: string
+  isSelected: boolean
+  isDisabled: boolean
+  onClick: () => void
+}) {
+  return (
+    <Button
+      variant="outlined"
+      onClick={onClick}
+      disabled={isDisabled}
+      sx={{
+        minWidth: "80px",
+        height: "40px",
+        borderRadius: "8px",
+        fontSize: "14px",
+        fontWeight: 500,
+        textTransform: "none",
+        borderColor: isSelected ? "#CC627B" : "#E5E7EB",
+        color: isSelected ? "#FFFFFF" : isDisabled ? "#D1D5DB" : "#000000",
+        bgcolor: isSelected ? "#CC627B" : isDisabled ? "#F3F4F6" : "transparent",
+        ...(!isDisabled && {
+          "&:hover": {
+            borderColor: "#CC627B",
+            bgcolor: "rgba(204, 98, 123, 0.1)",
+          },
+        }),
+        pointerEvents: isDisabled ? "none" : "auto",
+      }}
+    >
+      {time}
+    </Button>
   )
 }
