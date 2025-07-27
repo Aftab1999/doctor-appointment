@@ -150,7 +150,8 @@ const handleTimeConfirm = (time: string) => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
+        // background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
+         background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
         maxWidth: "400px",
         mx: "auto",
         position: "relative",
@@ -365,9 +366,9 @@ const handleTimeConfirm = (time: string) => {
           </CardContent>
         </Card>
 
-        {/* Session Type Section */}
-
-            <Box component="form" onSubmit={formik.handleSubmit} sx={{ px: 3, pb: 3 }}>
+      <Box component="form" onSubmit={formik.handleSubmit}
+      
+      >
 
 
         <Typography
