@@ -77,32 +77,69 @@ export default function Dashboard() {
     <Box
       sx={{
         minHeight: "100vh",
-        // background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
-         background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
+        background: "linear-gradient(135deg, #B0A4F5 0%, #F9CCC5 30%, #EDA197 100%)",
         maxWidth: "420px",
         mx: "auto",
         position: "relative",
         pb: 4,
       }}
     >
-      {/* Status Bar */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          px: 3,
-          py: 1,
-          fontSize: "16px",
-          fontWeight: 600,
-          color: "#000",
-        }}
-      >
-        <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>9:41</Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          {/* Status icons */}
-        </Box>
-      </Box>
+     
+       {/* Status Bar */}
+           <Box
+             sx={{
+               display: "flex",
+               justifyContent: "space-between",
+               alignItems: "center",
+               px: 3,
+               py: 1,
+               fontSize: "16px",
+               fontWeight: 600,
+               color: "#000",
+             }}
+           >
+             <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>9:41</Typography>
+             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+               <Box sx={{ display: "flex", gap: "2px" }}>
+                 <Box sx={{ width: "4px", height: "4px", bgcolor: "#000", borderRadius: "50%" }} />
+                 <Box sx={{ width: "4px", height: "6px", bgcolor: "#000", borderRadius: "1px" }} />
+                 <Box sx={{ width: "4px", height: "8px", bgcolor: "#000", borderRadius: "1px" }} />
+                 <Box sx={{ width: "4px", height: "10px", bgcolor: "#000", borderRadius: "1px" }} />
+               </Box>
+               <Box sx={{ ml: 1, fontSize: "14px" }}>📶</Box>
+               <Box sx={{ ml: 1, fontSize: "14px" }}>📶</Box>
+               <Box
+                 sx={{
+                   width: "24px",
+                   height: "12px",
+                   border: "1px solid #000",
+                   borderRadius: "2px",
+                   ml: 1,
+                   position: "relative",
+                   "&::after": {
+                     content: '""',
+                     position: "absolute",
+                     right: "-3px",
+                     top: "3px",
+                     width: "2px",
+                     height: "6px",
+                     bgcolor: "#000",
+                     borderRadius: "0 1px 1px 0",
+                   },
+                 }}
+               >
+                 <Box
+                   sx={{
+                     width: "18px",
+                     height: "8px",
+                     bgcolor: "#4CAF50",
+                     borderRadius: "1px",
+                     m: "1px",
+                   }}
+                 />
+               </Box>
+             </Box>
+           </Box>
 
       {/* Header */}
       <Box sx={{ px: 3, py: 2 }}>
@@ -161,8 +198,12 @@ export default function Dashboard() {
       {/* Content */}
       <Box sx={{ px: 3 }}>
 
-        {/* Upcoming Session Card (without accordion) */}
-        {upcomingSession && (
+        {/* Upcoming Session Section */}
+        <Typography variant="h6" sx={{ mb: 2, color: "#FFF", fontWeight: 600 }}>
+          Upcoming Session
+        </Typography>
+        
+        {upcomingSession ? (
           <Card
             sx={{
               mb: 3,
@@ -226,7 +267,6 @@ export default function Dashboard() {
                   sx={{
                     whiteSpace: "nowrap",
                     height: "43px",
-                    // width: "197px",
                     background: "linear-gradient(90deg, #BBA3E4 0%, #E7A1A0 100%)",
                     borderRadius: "12px",
                     textTransform: "none",
@@ -247,80 +287,141 @@ export default function Dashboard() {
               </Box>
             </CardContent>
           </Card>
-        )}
-
-        {/* Individual Accordions for Past Sessions */}
-        {pastSessions.map((session, index) => (
-          <Accordion
-            key={index}
-            expanded={expandedPastSession === `past-${index}`}
-            onChange={handlePastSessionChange(`past-${index}`)}
+        ) : (
+          <Card
             sx={{
-              mb: 2,
-              borderRadius: "16px !important",
+              mb: 3,
+              borderRadius: "16px",
               boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
               bgcolor: "rgba(255,255,255,0.9)",
-              "&:before": { display: "none" },
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "200px",
+              textAlign: "center",
             }}
           >
-            <AccordionSummary
-              expandIcon={<ExpandMore sx={{ color: "#666" }} />}
-              sx={{
-                minHeight: "72px",
-                "& .MuiAccordionSummary-content": {
-                  my: 1,
-                  alignItems: "center",
-                },
-              }}
-            >
-              <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-                <Typography sx={{ 
-                  fontSize: "16px", 
-                  fontWeight: 600, 
-                  color: "#000",
-                  minWidth: "70px",
-                  mr: 2
-                }}>
-                  {session.sessionTime}
-                </Typography>
-                <Box>
-                  <Typography sx={{ fontSize: "16px", fontWeight: 600, color: "#000" }}>
-                    {session.practitioner.name}
-                  </Typography>
-                  <Typography sx={{ fontSize: "12px", color: "#666" }}>
-                    {session.sessionType}
-                  </Typography>
-                </Box>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails sx={{ p: 3, pt: 0 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <AccessTime sx={{ fontSize: "14px", color: "#666", mr: 1 }} />
-                <Typography sx={{ fontSize: "12px", color: "#666" }}>
-                  {formatDate(session.sessionDate)}
-                </Typography>
-              </Box>
+            <CardContent>
+              <Typography sx={{ fontSize: "16px", color: "#666", mb: 2 }}>
+                No upcoming sessions scheduled
+              </Typography>
               <Button
-                fullWidth
                 variant="outlined"
+                onClick={() => router.push("/doctors")}
                 sx={{
-                  height: "40px",
-                  borderColor: "#CC627B",
-                  color: "#CC627B",
+                  color: "#BBA3E4",
+                  borderColor: "#BBA3E4",
                   borderRadius: "12px",
                   textTransform: "none",
                   fontWeight: 600,
-                  "&:hover": {
-                    borderColor: "#CC627B",
-                    bgcolor: "rgba(204, 98, 123, 0.05)",
+                }}
+              >
+                Schedule a Session
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Past Sessions Section */}
+        <Typography variant="h6" sx={{ mb: 2, color: "#FFF", fontWeight: 600 }}>
+          Past Sessions
+        </Typography>
+        
+        {pastSessions.length > 0 ? (
+          pastSessions.map((session, index) => (
+            <Accordion
+              key={index}
+              expanded={expandedPastSession === `past-${index}`}
+              onChange={handlePastSessionChange(`past-${index}`)}
+              sx={{
+                mb: 2,
+                borderRadius: "16px !important",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                bgcolor: "rgba(255,255,255,0.9)",
+                "&:before": { display: "none" },
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMore sx={{ color: "#666" }} />}
+                sx={{
+                  minHeight: "72px",
+                  "& .MuiAccordionSummary-content": {
+                    my: 1,
+                    alignItems: "center",
                   },
                 }}
               >
-                View Details
-              </Button>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+                  <Typography sx={{ 
+                    fontSize: "16px", 
+                    fontWeight: 600, 
+                    color: "#000",
+                    minWidth: "70px",
+                    mr: 2
+                  }}>
+                    {session.sessionTime}
+                  </Typography>
+                  <Box>
+                    <Typography sx={{ fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                      {session.practitioner.name}
+                    </Typography>
+                    <Typography sx={{ fontSize: "12px", color: "#666" }}>
+                      {session.sessionType}
+                    </Typography>
+                  </Box>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails sx={{ p: 3, pt: 0 }}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <AccessTime sx={{ fontSize: "14px", color: "#666", mr: 1 }} />
+                  <Typography sx={{ fontSize: "12px", color: "#666" }}>
+                    {formatDate(session.sessionDate)}
+                  </Typography>
+                </Box>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  sx={{
+                    height: "40px",
+                    borderColor: "#CC627B",
+                    color: "#CC627B",
+                    borderRadius: "12px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    "&:hover": {
+                      borderColor: "#CC627B",
+                      bgcolor: "rgba(204, 98, 123, 0.05)",
+                    },
+                  }}
+                >
+                  View Details
+                </Button>
+              </AccordionDetails>
+            </Accordion>
+          ))
+        ) : (
+          <Card
+            sx={{
+              mb: 3,
+              borderRadius: "16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+              bgcolor: "rgba(255,255,255,0.9)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "150px",
+              textAlign: "center",
+            }}
+          >
+            <CardContent>
+              <Typography sx={{ fontSize: "16px", color: "#666" }}>
+                No past sessions found
+              </Typography>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Schedule Now Button */}
         <Button
