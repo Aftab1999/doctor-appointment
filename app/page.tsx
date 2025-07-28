@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation"
 import doctorPortrait from "../assets/sgv-1.svg"
 import CallIcon from "../assets/caller.svg"
 import ProfileIcon from "../assets/profile.svg"
+import doctors from "../data/doctorsData"
+import DoctorCard from "../components/DoctorCard"
 
 interface Session {
   sessionMode: string
@@ -48,6 +50,7 @@ export default function Dashboard() {
   const [upcomingSession, setUpcomingSession] = useState<Session | null>(null)
   const [pastSessions, setPastSessions] = useState<Session[]>([])
   const [expandedPastSession, setExpandedPastSession] = useState<string | false>(false)
+  const [expandedDoctorCard, setExpandedDoctorCard] = useState<number | null>(null)
 
   useEffect(() => {
     const sessions = JSON.parse(localStorage.getItem("scheduledSessions") || "[]")
@@ -72,6 +75,15 @@ export default function Dashboard() {
   const handlePastSessionChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpandedPastSession(isExpanded ? panel : false)
   }
+
+  const handleDoctorCardToggle = (id: number) => {
+    setExpandedDoctorCard(expandedDoctorCard === id ? null : id)
+  }
+
+  const filteredDoctors = doctors.filter((doctor) =>
+    doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    doctor.expertise.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
     <Box
@@ -193,6 +205,26 @@ export default function Dashboard() {
             <FilterList sx={{ color: "#999", fontSize: "20px" }} />
           </IconButton>
         </Box>
+        {/* Dynamic Doctor List (only show if searching) */}
+        {searchQuery && (
+          <Box sx={{ px: 0, pb: 3 }}>
+            {filteredDoctors.length > 0 ? (
+              filteredDoctors.map((doctor) => (
+                <DoctorCard
+                  key={doctor.id}
+                  doctor={doctor}
+                  expandedCard={expandedDoctorCard}
+                  handleCardToggle={handleDoctorCardToggle}
+                  onBook={() => {}}
+                />
+              ))
+            ) : (
+              <Typography sx={{ color: '#fff', textAlign: 'center', mb: 2 }}>
+                No doctors found.
+              </Typography>
+            )}
+          </Box>
+        )}
       </Box>
 
       {/* Content */}
@@ -215,7 +247,7 @@ export default function Dashboard() {
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                 <Box sx={{ mr: 2 }}>
-                  <Typography sx={{ fontSize: "20px", fontWeight: 600, color: "#000", lineHeight: 1 }}>
+                  <Typography sx={{ fontSize: "20px", fontWeight: 600, color: "#000", lineHeight: 1, whiteSpace:"nowrap"}}>
                     {upcomingSession.sessionTime}
                   </Typography>
                   <Typography sx={{ fontSize: "14px", color: "#6D6A5D", mt: 0.5 }}>

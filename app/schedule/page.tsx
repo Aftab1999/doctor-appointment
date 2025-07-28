@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   Box,
   Typography,
@@ -58,6 +58,30 @@ export default function ScheduleSession() {
   const [sessionType, setSessionType] = useState("counselling-1hr")
   const [sessionTypeOpen, setSessionTypeOpen] = useState(false)
   const [isTimeModalOpen, setIsTimeModalOpen] = useState(false)
+  const [practitionerName, setPractitionerName] = useState("Sana Dillon")
+  const [practitionerAvatar, setPractitionerAvatar] = useState(Person7)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedDoctor = sessionStorage.getItem("selectedDoctor")
+      if (storedDoctor) {
+        try {
+          const doctorData = JSON.parse(storedDoctor)
+          setPractitionerName(doctorData.name)
+          setPractitionerAvatar(doctorData.avatar)
+        } catch (e) {
+          // Fallback to string if it's just the name
+          setPractitionerName(storedDoctor)
+        }
+      }
+    }
+  }, [])
+
+  const practitioner = {
+    name: practitionerName,
+    phone: "+91 98765 43210",
+    avatar: practitionerAvatar,
+  }
 
   const patient = {
     name: "Shubham Naik",
@@ -65,13 +89,6 @@ export default function ScheduleSession() {
     // avatar: "S",
     avatar: Person6,
 
-  }
-
-  const practitioner = {
-    name: "Sana Dillon",
-    phone: "+91 98765 43210",
-    // avatar: "S",
-    avatar: Person7,
   }
 
   const sessionTypes = [
@@ -324,24 +341,37 @@ const handleTimeConfirm = (time: string) => {
         >
           <CardContent sx={{ p: 2.5 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Avatar
+
+              {/* <Avatar
                 sx={{
                   width: 40,
                   height: 40,
                   mr: 2,
-                  bgcolor: "#FF9800",
+                  // bgcolor: "#FF9800",
                   fontSize: "16px",
                   fontWeight: 600,
                 }}
+              > */}
+
+             <Box
+                sx={{
+                  width: 48,
+                  height: 48,
+                  fontSize: "18px",
+                  fontWeight: 600,
+                }}
               >
+
                 <img
                   src={typeof practitioner.avatar === "string" ? practitioner.avatar : practitioner.avatar.src}
                   alt={practitioner.name}
-                  width={32}
-                  height={32}
-                  style={{ objectFit: "contain", width: 32, height: 32 }}
+                  // width={32}
+                  // height={32}
+                  style={{ objectFit: "contain", width: 40, height: 40 }}
                 />
-              </Avatar>
+
+              {/* </Avatar> */}
+              </Box>
               <Box>
                 <Typography
                   sx={{

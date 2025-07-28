@@ -36,7 +36,10 @@ const Doctors = () => {
   const handleBook = (id: number) => {
     const doctor = doctors.find((doc) => doc.id === id);
     if (doctor) {
-      sessionStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+      sessionStorage.setItem("selectedDoctor", JSON.stringify({
+        name: doctor.name,
+        avatar: doctor.avatar
+      }));
       router.push("/schedule");
     }
   };
