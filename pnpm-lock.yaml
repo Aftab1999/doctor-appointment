@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@emotion/react':
-        specifier: latest
+        specifier: ^11.14.0
         version: 11.14.0(@types/react@18.0.0)(react@18.0.0)
       '@emotion/styled':
-        specifier: latest
+        specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react@18.0.0)
       '@hookform/resolvers':
         specifier: ^3.9.1
@@ -21,7 +21,7 @@ importers:
         specifier: latest
         version: 7.2.0(@mui/material@7.2.0(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react@18.0.0))(@mui/material-pigment-css@7.2.0(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react@18.0.0))(@pigment-css/react@0.0.30(@types/react@18.0.0)(react@18.0.0)(typescript@5.0.2))(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0))(@types/react@18.0.0)(react@18.0.0)
       '@mui/material':
-        specifier: latest
+        specifier: ^7.2.0
         version: 7.2.0(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react@18.0.0))(@mui/material-pigment-css@7.2.0(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react@18.0.0))(@pigment-css/react@0.0.30(@types/react@18.0.0)(react@18.0.0)(typescript@5.0.2))(@types/react@18.0.0)(react@18.0.0))(@types/react@18.0.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
       '@mui/material-pigment-css':
         specifier: latest
